@@ -1,0 +1,42 @@
+Sub DeleteCreatedSheets()
+    Dim wsControl As Worksheet
+    Dim ws As Worksheet
+    Dim rngNames As Range
+    Dim cell As Range
+    Dim dict As Object
+    Dim sheetName As String
+    
+    ' Turn off screen updating and alerts to speed up the macro
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    ' Set reference to the "Control" sheet
+    Set wsControl = ThisWorkbook.Sheets("Control")
+    
+    ' Define the range with the sheet names to delete
+    Set rngNames = wsControl.Range("B3:B31")
+    
+    ' Create a dictionary to hold the names for quick lookup
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Populate the dictionary with sheet names from the "Control" sheet
+    For Each cell In rngNames
+        sheetName = cell.Value
+        If sheetName <> "" And Not dict.Exists(sheetName) Then
+            dict.Add sheetName, Nothing
+        End If
+    Next cell
+    
+    ' Loop through all sheets in the workbook
+    For i = ThisWorkbook.Sheets.Count To 1 Step -1
+        Set ws = ThisWorkbook.Sheets(i)
+        ' If the sheet name is in the dictionary, delete the sheet
+        If dict.Exists(ws.Name) Then
+            ws.Delete
+        End If
+    Next i
+    
+    ' Turn on screen updating and alerts
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+End Sub

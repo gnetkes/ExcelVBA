@@ -1,0 +1,60 @@
+Sub DuplicateTemplate()
+    Dim wsTemplate As Worksheet
+    Dim wsControl As Worksheet
+    Dim wsNew As Worksheet
+    Dim maxNumber As Long
+    Dim sheetName As String
+    Dim i As Long
+    Dim index As Long
+    
+    ' Turn off screen updating, events, and set calculation to manual
+    With Application
+        .ScreenUpdating = False
+        .EnableEvents = False
+        .Calculation = xlCalculationManual
+    End With
+    
+    ' Set references to the "Template" and "Control" sheets
+    Set wsTemplate = ThisWorkbook.Sheets("Template")
+    Set wsControl = ThisWorkbook.Sheets("Control")
+    
+    ' Find the highest number in the "Control" sheet's range B3:B31
+    maxNumber = Application.WorksheetFunction.Max(wsControl.Range("B3:B31"))
+    
+    ' Initialize the index
+    index = 1
+    
+    ' Loop through the list of names in the "Control" sheet's range B3:B31
+    For i = 3 To 31
+        ' Get the next sheet name from the list
+        sheetName = wsControl.Range("B" & i).Value
+        
+        ' If the sheet name is empty, exit the loop
+        If sheetName = "" Then Exit For
+        
+        ' Check if the index has reached the maximum number
+        If index > maxNumber Then Exit For
+        
+        ' Copy the "Template" sheet
+        wsTemplate.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+        
+        ' Set the new worksheet to the last sheet (which is the copied one)
+        Set wsNew = ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+        
+        ' Rename the new sheet with the name from the list
+        wsNew.Name = sheetName
+        
+        ' Set the value in cell A1 of the new sheet to the index
+        wsNew.Range("A1").Value = index
+        
+        ' Increment the index for the next sheet
+        index = index + 1
+    Next i
+    
+    ' Turn on screen updating, events, and set calculation back to automatic
+    With Application
+        .ScreenUpdating = True
+        .EnableEvents = True
+        .Calculation = xlCalculationAutomatic
+    End With
+End Sub
